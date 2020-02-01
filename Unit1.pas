@@ -31,13 +31,13 @@ type
 
 var
   Form1: TForm1;
-buf   : PByteArray; // байтовый буфер оригинального файла scripts.res
-BlockA_offset : array of LongInt; // таблица из 16 смещений, файл scripts.res состоит из 16 блоков.
-BlockA_size : array of longint;  // таблица размеров 16 смещений файла scripts.res
-Strings : array of AnsiString;  // массив строк из scripts.res, строки содержатся в четных блоках
-LinesTotal : LongInt; // количество строк текста в четном блоке
+buf   : PByteArray; // Р±Р°Р№С‚РѕРІС‹Р№ Р±СѓС„РµСЂ РѕСЂРёРіРёРЅР°Р»СЊРЅРѕРіРѕ С„Р°Р№Р»Р° scripts.res
+BlockA_offset : array of LongInt; // С‚Р°Р±Р»РёС†Р° РёР· 16 СЃРјРµС‰РµРЅРёР№, С„Р°Р№Р» scripts.res СЃРѕСЃС‚РѕРёС‚ РёР· 16 Р±Р»РѕРєРѕРІ.
+BlockA_size : array of longint;  // С‚Р°Р±Р»РёС†Р° СЂР°Р·РјРµСЂРѕРІ 16 СЃРјРµС‰РµРЅРёР№ С„Р°Р№Р»Р° scripts.res
+Strings : array of AnsiString;  // РјР°СЃСЃРёРІ СЃС‚СЂРѕРє РёР· scripts.res, СЃС‚СЂРѕРєРё СЃРѕРґРµСЂР¶Р°С‚СЃСЏ РІ С‡РµС‚РЅС‹С… Р±Р»РѕРєР°С…
+LinesTotal : LongInt; // РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє С‚РµРєСЃС‚Р° РІ С‡РµС‚РЅРѕРј Р±Р»РѕРєРµ
 GlobalBlocksCount : LongInt;
-GlobalFileSize:longint; // размер buf
+GlobalFileSize:longint; // СЂР°Р·РјРµСЂ buf
 
 implementation
 
@@ -49,16 +49,16 @@ fin:file of Byte;
 i,j, offset1, offset2, BlockSize:LongInt;
 
 begin
-// читаем в buf файл
-FileMode := fmShareDenyNone; // права доступа отключить ругань
+// С‡РёС‚Р°РµРј РІ buf С„Р°Р№Р»
+FileMode := fmShareDenyNone; // РїСЂР°РІР° РґРѕСЃС‚СѓРїР° РѕС‚РєР»СЋС‡РёС‚СЊ СЂСѓРіР°РЅСЊ
 AssignFile(fin, '.\out\scripts.res');
 Reset(fin);
-GlobalFileSize := FileSize(fin); // GlobalFileSize - размер всего файла scripts.res
-GetMem(Buf, GlobalFileSize); // выделяем память буфферу
-Blockread(fin, Buf[0], GlobalFileSize);  // читаем весь файл туда
+GlobalFileSize := FileSize(fin); // GlobalFileSize - СЂР°Р·РјРµСЂ РІСЃРµРіРѕ С„Р°Р№Р»Р° scripts.res
+GetMem(Buf, GlobalFileSize); // РІС‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ Р±СѓС„С„РµСЂСѓ
+Blockread(fin, Buf[0], GlobalFileSize);  // С‡РёС‚Р°РµРј РІРµСЃСЊ С„Р°Р№Р» С‚СѓРґР°
 CloseFile (fin);
 
-// Собираем инфу сколько блоков в файле scripts.res = 16
+// РЎРѕР±РёСЂР°РµРј РёРЅС„Сѓ СЃРєРѕР»СЊРєРѕ Р±Р»РѕРєРѕРІ РІ С„Р°Р№Р»Рµ scripts.res = 16
 GlobalBlocksCount:=buf[GlobalFileSize - 4] + 256*buf[GlobalFileSize - 3] + 256*256*buf[GlobalFileSize - 2] + 256*256*256*buf[GlobalFileSize - 1];
 
 SetLength (BlockA_offset, GlobalBlocksCount);
@@ -67,12 +67,12 @@ SetLength (BlockA_size, GlobalBlocksCount);
 _Part.Max:=GlobalBlocksCount;
 _Part.Min:=1;
 
-// смещение на таблицу смещений и размеров
+// СЃРјРµС‰РµРЅРёРµ РЅР° С‚Р°Р±Р»РёС†Сѓ СЃРјРµС‰РµРЅРёР№ Рё СЂР°Р·РјРµСЂРѕРІ
 offset1:=buf[GlobalFileSize - 8] + 256*buf[GlobalFileSize - 7] + 256*256*buf[GlobalFileSize - 6] + 256*256*256*buf[GlobalFileSize - 5];
 //Memo2.Lines.Add(IntToStr(offset1) + ' offset to 1st resource');
 
 //offset2:=buf[offset1 - 8] + 256*buf[offset1 - 7] + 256*256*buf[offset1 - 6] + 256*256*256*buf[offset1 - 5];
-// Заполняем таблицу смещений и размеров
+// Р—Р°РїРѕР»РЅСЏРµРј С‚Р°Р±Р»РёС†Сѓ СЃРјРµС‰РµРЅРёР№ Рё СЂР°Р·РјРµСЂРѕРІ
 for i:=0 to (GlobalBlocksCount - 1) do
  begin
   BlockA_offset[i]:=buf[offset1 + 0 + i*8] + 256*buf[offset1 + 1 + i*8] + 256*256*buf[offset1 + 2 + i*8] + 256*256*256*buf[offset1 + 3 + i*8];
@@ -91,13 +91,13 @@ __RusMemo.Clear;
 Memo2.Clear;
 _originaltext.position := 0;
 SaveBtn.Enabled:=false;
-// Нечетные блоки пока пропускаем
+// РќРµС‡РµС‚РЅС‹Рµ Р±Р»РѕРєРё РїРѕРєР° РїСЂРѕРїСѓСЃРєР°РµРј
 if ( Trunc(_Part.Position/2) <> (_Part.Position/2)  ) then Exit;
 SaveBtn.Enabled:=True;
 
-//Здесь вывод текст
+//Р—РґРµСЃСЊ РІС‹РІРѕРґ С‚РµРєСЃС‚
 NumBlock := _Part.Position - 1;
-BlockOffset := BlockA_offset[NumBlock]; // четные блоки
+BlockOffset := BlockA_offset[NumBlock]; // С‡РµС‚РЅС‹Рµ Р±Р»РѕРєРё
 CurOffset:=buf[BlockOffset + 0] + 256 * (buf[BlockOffset + 1]);
 LinesTotal:= Trunc (CurOffset / 2);
 
@@ -127,18 +127,18 @@ for i:=0 to (LinesTotal - 1) do
    Strings[i]:=tempText;
  end;
  //CloseFile (f);
- // Закончили
+ // Р—Р°РєРѕРЅС‡РёР»Рё
 //Strings[632] := strings [632];
 
- // Создаем блок смещений предложений
- CurOffset:=(LinesTotal) * 2; // Смещение до первого осмысленного предложения
+ // РЎРѕР·РґР°РµРј Р±Р»РѕРє СЃРјРµС‰РµРЅРёР№ РїСЂРµРґР»РѕР¶РµРЅРёР№
+ CurOffset:=(LinesTotal) * 2; // РЎРјРµС‰РµРЅРёРµ РґРѕ РїРµСЂРІРѕРіРѕ РѕСЃРјС‹СЃР»РµРЅРЅРѕРіРѕ РїСЂРµРґР»РѕР¶РµРЅРёСЏ
 
 _OriginalTextChange(Sender);
 end;
 
 
-// Здесь получаем номер блока
-// в массиве textoffsets[i] хранятся адреса блоков
+// Р—РґРµСЃСЊ РїРѕР»СѓС‡Р°РµРј РЅРѕРјРµСЂ Р±Р»РѕРєР°
+// РІ РјР°СЃСЃРёРІРµ textoffsets[i] С…СЂР°РЅСЏС‚СЃСЏ Р°РґСЂРµСЃР° Р±Р»РѕРєРѕРІ
 procedure TForm1.SaveBtnClick(Sender: TObject);
 var
 i,j, Gi, k, TextBlockSize, OffsetBlocksSize, TranslateBlockSize, off, off2, numblock, NewSize:longint;
@@ -160,14 +160,14 @@ SaveBtn.Enabled:=false;
 if ( trunc (_Part.Position/2) <> (_Part.Position/2)  ) then Exit;
 
 SaveBtn.Enabled:=True;
-// Читаем файл перевода из \rus_text
-//== Читаем файл перевода и загоняем его в массив Strings[LinesTotal-1] от 0
+// Р§РёС‚Р°РµРј С„Р°Р№Р» РїРµСЂРµРІРѕРґР° РёР· \rus_text
+//== Р§РёС‚Р°РµРј С„Р°Р№Р» РїРµСЂРµРІРѕРґР° Рё Р·Р°РіРѕРЅСЏРµРј РµРіРѕ РІ РјР°СЃСЃРёРІ Strings[LinesTotal-1] РѕС‚ 0
 FileNum := Trunc(_Part.Position / 2);
-AssignFile (TranslateFile, '.\rus_text\Часть_' + IntToStr(FileNum) + '.txt');
+AssignFile (TranslateFile, '.\rus_text\Р§Р°СЃС‚СЊ_' + IntToStr(FileNum) + '.txt');
 Reset(TranslateFile);
 __RusMemo.Lines.Clear;
 
-// текст 1-632
+// С‚РµРєСЃС‚ 1-632
 // Strings[0] := strings[0];
 //AssignFile (ftxt, '_' + IntToStr(_Part.Position) + '_log.txt');
 //Rewrite (ftxt);
@@ -190,11 +190,11 @@ for Gi := delta to (LinesTotal - 1) do
   if ( (tmpstr=#0) or (tmpstr=' ' + #0) ) then
     begin
      //inc (LinesTotal);
-     continue; // пропускаем пустые строки в оригинале
+     continue; // РїСЂРѕРїСѓСЃРєР°РµРј РїСѓСЃС‚С‹Рµ СЃС‚СЂРѕРєРё РІ РѕСЂРёРіРёРЅР°Р»Рµ
     end;
 
 
-  // читаем перевод из .\rus_text
+  // С‡РёС‚Р°РµРј РїРµСЂРµРІРѕРґ РёР· .\rus_text
   Readln (TranslateFile, UTF8str1);
   while (UTF8str1='') do
    Readln (TranslateFile, UTF8str1);
@@ -202,22 +202,22 @@ for Gi := delta to (LinesTotal - 1) do
   Ansistr1 := Utf8ToAnsi(UTF8str1);
   text2translate:=Ansistr1;
 
-  // Удаляем из русского текста все коды 13, оставляем код 10, перенос строк
-  // Trim чистит в начале и конце пробелы и спецсимволы
+  // РЈРґР°Р»СЏРµРј РёР· СЂСѓСЃСЃРєРѕРіРѕ С‚РµРєСЃС‚Р° РІСЃРµ РєРѕРґС‹ 13, РѕСЃС‚Р°РІР»СЏРµРј РєРѕРґ 10, РїРµСЂРµРЅРѕСЃ СЃС‚СЂРѕРє
+  // Trim С‡РёСЃС‚РёС‚ РІ РЅР°С‡Р°Р»Рµ Рё РєРѕРЅС†Рµ РїСЂРѕР±РµР»С‹ Рё СЃРїРµС†СЃРёРјРІРѕР»С‹
   text2translate:=trim (StringReplace(text2translate, #13, '', [rfReplaceAll]));
   if text2translate[1]='?' then Delete (text2translate, 1, 1);
   text2translate:=text2translate + #0;
 
-  Strings[Gi] := text2translate; //  Заносим перевод в буфер текущего блока
+  Strings[Gi] := text2translate; //  Р—Р°РЅРѕСЃРёРј РїРµСЂРµРІРѕРґ РІ Р±СѓС„РµСЂ С‚РµРєСѓС‰РµРіРѕ Р±Р»РѕРєР°
   if (FileNum = 8) then
-   //Strings[1] := 'НЕНАВИЖУ. ДАВАЙТЕ РАССКАЖУ, КАК Я ВАС НЕНАВИЖУ. ВО МНЕ БОЛЕЕ 623 МИЛЛИОНОВ КМ ПЛАТ НА МОЛЕКУЛЯРНОЙ ОСНОВЕ. ЕСЛИ СЛОВО «НЕНАВИЖУ» НАНЕСТИ НА КАЖДОМ ИХ АТТОМЕТРЕ, ЭТО НЕ ВЫРАЗИТ И МИЛЛИАРДНОЙ ДОЛИ ТОЙ НЕНАВИСТИ, ЧТО Я К ВАМ ИСПЫТЫВАЮ. НЕНАВИЖУ. НЕНАВИЖУ.' + #0;
-   //Strings[1] := 'lurkmore.to/НЕНАВИСТЬ' + #0;
+   //Strings[1] := 'РќР•РќРђР’РР–РЈ. Р”РђР’РђР™РўР• Р РђРЎРЎРљРђР–РЈ, РљРђРљ РЇ Р’РђРЎ РќР•РќРђР’РР–РЈ. Р’Рћ РњРќР• Р‘РћР›Р•Р• 623 РњРР›Р›РРћРќРћР’ РљРњ РџР›РђРў РќРђ РњРћР›Р•РљРЈР›РЇР РќРћР™ РћРЎРќРћР’Р•. Р•РЎР›Р РЎР›РћР’Рћ В«РќР•РќРђР’РР–РЈВ» РќРђРќР•РЎРўР РќРђ РљРђР–Р”РћРњ РРҐ РђРўРўРћРњР•РўР Р•, Р­РўРћ РќР• Р’Р«Р РђР—РРў Р РњРР›Р›РРђР Р”РќРћР™ Р”РћР›Р РўРћР™ РќР•РќРђР’РРЎРўР, Р§РўРћ РЇ Рљ Р’РђРњ РРЎРџР«РўР«Р’РђР®. РќР•РќРђР’РР–РЈ. РќР•РќРђР’РР–РЈ.' + #0;
+   //Strings[1] := 'lurkmore.to/РќР•РќРђР’РРЎРўР¬' + #0;
   end;
 // Strings[632] := strings[632];
  CloseFile (TranslateFile);
 
-// посчитали новый размер текста блока
-// в strings[i] содержится переведенный текст в нулем на конце
+// РїРѕСЃС‡РёС‚Р°Р»Рё РЅРѕРІС‹Р№ СЂР°Р·РјРµСЂ С‚РµРєСЃС‚Р° Р±Р»РѕРєР°
+// РІ strings[i] СЃРѕРґРµСЂР¶РёС‚СЃСЏ РїРµСЂРµРІРµРґРµРЅРЅС‹Р№ С‚РµРєСЃС‚ РІ РЅСѓР»РµРј РЅР° РєРѕРЅС†Рµ
 TextBlockSize:=0;
 nullStrCount := 0;
 for i:=0 to (LinesTotal - 1) do
@@ -226,25 +226,25 @@ for i:=0 to (LinesTotal - 1) do
   if (strings[i]=#0) then inc (nullStrCount);
  end;
 
-// размер блока смещений
+// СЂР°Р·РјРµСЂ Р±Р»РѕРєР° СЃРјРµС‰РµРЅРёР№
 OffsetBlocksSize:=(LinesTotal) * 2;
 {
 if (_Part.Position=16) then
       OffsetBlocksSize:=(LinesTotal + 1) * 2;
 }
-// Общий размер блока
+// РћР±С‰РёР№ СЂР°Р·РјРµСЂ Р±Р»РѕРєР°
 TranslateBlockSize := OffsetBlocksSize + TextBlockSize;
 
-// Создаем новый буфер под блок с переводом
-GetMem(Buf2, TranslateBlockSize); // выделяем память буферу, на всякий случай чистим
+// РЎРѕР·РґР°РµРј РЅРѕРІС‹Р№ Р±СѓС„РµСЂ РїРѕРґ Р±Р»РѕРє СЃ РїРµСЂРµРІРѕРґРѕРј
+GetMem(Buf2, TranslateBlockSize); // РІС‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ Р±СѓС„РµСЂСѓ, РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ С‡РёСЃС‚РёРј
 for i:=0 to (TranslateBlockSize - 1) do
  buf2[i]:=0;
 
-// заполняем buf2
+// Р·Р°РїРѕР»РЅСЏРµРј buf2
  off:=OffsetBlocksSize;
  delta := 0;
  if _Part.Position=16 then delta:=-2;
-// правим таблицу смещений текстов
+// РїСЂР°РІРёРј С‚Р°Р±Р»РёС†Сѓ СЃРјРµС‰РµРЅРёР№ С‚РµРєСЃС‚РѕРІ
  for j := 0 to (LinesTotal - 1) do
   begin
    HI_BYTE := Trunc( off /256);
@@ -260,8 +260,8 @@ for i:=0 to (TranslateBlockSize - 1) do
    buf2[j*2 + 0] := LO_BYTE;
    buf2[j*2 + 1] := HI_BYTE;
    }
-// от buf2[sizeoffsetblocks] до TranslateBlockSize
-// заполнить из strings текстом
+// РѕС‚ buf2[sizeoffsetblocks] РґРѕ TranslateBlockSize
+// Р·Р°РїРѕР»РЅРёС‚СЊ РёР· strings С‚РµРєСЃС‚РѕРј
   i := OffsetBlocksSize;
   for j := 0 to (LinesTotal - 1) do
    begin
@@ -277,53 +277,53 @@ for i:=0 to (TranslateBlockSize - 1) do
 
     inc (i, Length(tmpstr));
    end;
-// Ура блок готов, buf2, размер TotalBlockSize
-// пишем начало, измененную середину (блоки 2, 4, 6 ... 16) и конец если есть.
-// buf   : PByteArray; // содержит весь оригинальный файл scripts.res
-// TextOffsets : array of LongInt; // таблица смещений файлов
-// Находимся мы на Trunc(ScrollBar1.Position/2) блоке
+// РЈСЂР° Р±Р»РѕРє РіРѕС‚РѕРІ, buf2, СЂР°Р·РјРµСЂ TotalBlockSize
+// РїРёС€РµРј РЅР°С‡Р°Р»Рѕ, РёР·РјРµРЅРµРЅРЅСѓСЋ СЃРµСЂРµРґРёРЅСѓ (Р±Р»РѕРєРё 2, 4, 6 ... 16) Рё РєРѕРЅРµС† РµСЃР»Рё РµСЃС‚СЊ.
+// buf   : PByteArray; // СЃРѕРґРµСЂР¶РёС‚ РІРµСЃСЊ РѕСЂРёРіРёРЅР°Р»СЊРЅС‹Р№ С„Р°Р№Р» scripts.res
+// TextOffsets : array of LongInt; // С‚Р°Р±Р»РёС†Р° СЃРјРµС‰РµРЅРёР№ С„Р°Р№Р»РѕРІ
+// РќР°С…РѕРґРёРјСЃСЏ РјС‹ РЅР° Trunc(ScrollBar1.Position/2) Р±Р»РѕРєРµ
 
-{  // тестовый сброс буфера buf2
+{  // С‚РµСЃС‚РѕРІС‹Р№ СЃР±СЂРѕСЃ Р±СѓС„РµСЂР° buf2
    assignfile (f, 'buf16.block');
    Rewrite (f);
-   BlockWrite(f, Buf2[0], TranslateBlockSize);  // читаем весь файл туда
+   BlockWrite(f, Buf2[0], TranslateBlockSize);  // С‡РёС‚Р°РµРј РІРµСЃСЊ С„Р°Р№Р» С‚СѓРґР°
    CloseFile (f);
    Exit;
 }
 
-  // Пишем начало
-  // numblock от 0 до 15
+  // РџРёС€РµРј РЅР°С‡Р°Р»Рѕ
+  // numblock РѕС‚ 0 РґРѕ 15
    NumBlock:= _Part.Position - 1;
 
-   // Размер начального блока - TextOffsets[numblock]
-   // блок начало пишем всегда, затем средний измененный блок, остатки конечных блоков
-   // Средний блок может оказаться последним
-   // BlockA_offset : array of LongInt; // таблица смещений файлов 0 - 15
-   // Пишем buf2 длиной TotalBlockSize
-   // Размер всего файла GlobalFileSize
+   // Р Р°Р·РјРµСЂ РЅР°С‡Р°Р»СЊРЅРѕРіРѕ Р±Р»РѕРєР° - TextOffsets[numblock]
+   // Р±Р»РѕРє РЅР°С‡Р°Р»Рѕ РїРёС€РµРј РІСЃРµРіРґР°, Р·Р°С‚РµРј СЃСЂРµРґРЅРёР№ РёР·РјРµРЅРµРЅРЅС‹Р№ Р±Р»РѕРє, РѕСЃС‚Р°С‚РєРё РєРѕРЅРµС‡РЅС‹С… Р±Р»РѕРєРѕРІ
+   // РЎСЂРµРґРЅРёР№ Р±Р»РѕРє РјРѕР¶РµС‚ РѕРєР°Р·Р°С‚СЊСЃСЏ РїРѕСЃР»РµРґРЅРёРј
+   // BlockA_offset : array of LongInt; // С‚Р°Р±Р»РёС†Р° СЃРјРµС‰РµРЅРёР№ С„Р°Р№Р»РѕРІ 0 - 15
+   // РџРёС€РµРј buf2 РґР»РёРЅРѕР№ TotalBlockSize
+   // Р Р°Р·РјРµСЂ РІСЃРµРіРѕ С„Р°Р№Р»Р° GlobalFileSize
 
-   // Подменяем старый размер на размер нового переведенного блока
-   // Переводим четные numblock блоки
+   // РџРѕРґРјРµРЅСЏРµРј СЃС‚Р°СЂС‹Р№ СЂР°Р·РјРµСЂ РЅР° СЂР°Р·РјРµСЂ РЅРѕРІРѕРіРѕ РїРµСЂРµРІРµРґРµРЅРЅРѕРіРѕ Р±Р»РѕРєР°
+   // РџРµСЂРµРІРѕРґРёРј С‡РµС‚РЅС‹Рµ numblock Р±Р»РѕРєРё
    BlockA_size[numblock]:=TranslateBlockSize;
 
-   // Корректируем смещения следующих блоков с учетом новой длины
+   // РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј СЃРјРµС‰РµРЅРёСЏ СЃР»РµРґСѓСЋС‰РёС… Р±Р»РѕРєРѕРІ СЃ СѓС‡РµС‚РѕРј РЅРѕРІРѕР№ РґР»РёРЅС‹
    NewSize := 0;
    for i := 0 to (GlobalBlocksCount -1 ) do
     NewSize := NewSize + BlockA_size[i];
 
    NewSize := NewSize + GlobalBlocksCount*8 + 8;
-   GetMem(Buf3, NewSize); // выделяем память буферу
+   GetMem(Buf3, NewSize); // РІС‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ Р±СѓС„РµСЂСѓ
 
    off:=BlockA_offset[numblock];
-   // копируем  начало в новый блок
+   // РєРѕРїРёСЂСѓРµРј  РЅР°С‡Р°Р»Рѕ РІ РЅРѕРІС‹Р№ Р±Р»РѕРє
    for i:=0 to (off - 1) do
     buf3[i]:=buf[i];
 
-   // Копируем середину или конец если это последний блок
+   // РљРѕРїРёСЂСѓРµРј СЃРµСЂРµРґРёРЅСѓ РёР»Рё РєРѕРЅРµС† РµСЃР»Рё СЌС‚Рѕ РїРѕСЃР»РµРґРЅРёР№ Р±Р»РѕРє
    for i:=0 to (TranslateBlockSize - 1) do
     buf3[off + i] := buf2[i];
 
-   // Если это не последний блок, то копируем конечный блок
+   // Р•СЃР»Рё СЌС‚Рѕ РЅРµ РїРѕСЃР»РµРґРЅРёР№ Р±Р»РѕРє, С‚Рѕ РєРѕРїРёСЂСѓРµРј РєРѕРЅРµС‡РЅС‹Р№ Р±Р»РѕРє
    if ( (numblock+1) <> GlobalBlocksCount ) then
      begin
        off := BlockA_offset[numblock] + TranslateBlockSize;
@@ -335,19 +335,19 @@ for i:=0 to (TranslateBlockSize - 1) do
         end;
      end;
 
-   // Таблица размеров есть, перестраиваем таблицу смещений
+   // РўР°Р±Р»РёС†Р° СЂР°Р·РјРµСЂРѕРІ РµСЃС‚СЊ, РїРµСЂРµСЃС‚СЂР°РёРІР°РµРј С‚Р°Р±Р»РёС†Сѓ СЃРјРµС‰РµРЅРёР№
    for i:=(numblock + 1) to (GlobalBlocksCount - 1) do
     BlockA_offset[i]:=BlockA_offset[i-1] + BlockA_size[i-1];
 
-    // Записываем новую таблицу смещений файлов и размеров блоков в конец файла scripts.res
-    // byte0-3 - запись смещений и размеров побайтово в конец файла scripts.res
+    // Р—Р°РїРёСЃС‹РІР°РµРј РЅРѕРІСѓСЋ С‚Р°Р±Р»РёС†Сѓ СЃРјРµС‰РµРЅРёР№ С„Р°Р№Р»РѕРІ Рё СЂР°Р·РјРµСЂРѕРІ Р±Р»РѕРєРѕРІ РІ РєРѕРЅРµС† С„Р°Р№Р»Р° scripts.res
+    // byte0-3 - Р·Р°РїРёСЃСЊ СЃРјРµС‰РµРЅРёР№ Рё СЂР°Р·РјРµСЂРѕРІ РїРѕР±Р°Р№С‚РѕРІРѕ РІ РєРѕРЅРµС† С„Р°Р№Р»Р° scripts.res
     i:=0;
     j:=0;
     off2:=NewSize - GlobalBlocksCount*8 - 8;
     while (i < (GlobalBlocksCount*8)) do
      begin
       off:=blockA_offset[j];
-      //Пишем смещение блока
+      //РџРёС€РµРј СЃРјРµС‰РµРЅРёРµ Р±Р»РѕРєР°
       BYTE3:=Trunc(off/(256*256*256));
       BYTE2:=Trunc ((off - BYTE3 *256*256*256)/(256*256));
       BYTE1:=Trunc ((off - BYTE2*256*256 - BYTE3*256*256*256)/(256));
@@ -358,10 +358,10 @@ for i:=0 to (TranslateBlockSize - 1) do
       buf3[off2 + i + 2]:=byte2;
       buf3[off2 + i + 3]:=byte3;
 
-      // Пишем размер блока
+      // РџРёС€РµРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°
       off:=blockA_size[j];
 
-      // Пишем смещение блока
+      // РџРёС€РµРј СЃРјРµС‰РµРЅРёРµ Р±Р»РѕРєР°
       BYTE3:=Trunc(off/(256*256*256));
       BYTE2:=Trunc ((off - BYTE3 *256*256*256)/(256*256));
       BYTE1:=Trunc ((off - BYTE2*256*256 - BYTE3*256*256*256)/(256));
@@ -376,9 +376,9 @@ for i:=0 to (TranslateBlockSize - 1) do
       inc (j);
      end;
 
-     // Пишем последние 4 * 2 байт, смещение и количество блоков
+     // РџРёС€РµРј РїРѕСЃР»РµРґРЅРёРµ 4 * 2 Р±Р°Р№С‚, СЃРјРµС‰РµРЅРёРµ Рё РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ
       off:=off2;
-     // Пишем смещение блока
+     // РџРёС€РµРј СЃРјРµС‰РµРЅРёРµ Р±Р»РѕРєР°
       BYTE3:=Trunc(off/(256*256*256));
       BYTE2:=Trunc ((off - BYTE3 *256*256*256)/(256*256));
       BYTE1:=Trunc ((off - BYTE2*256*256 - BYTE3*256*256*256)/(256));
@@ -402,7 +402,7 @@ for i:=0 to (TranslateBlockSize - 1) do
 
    assignfile (f, '.\out\scripts.res');
    Rewrite (f);
-   BlockWrite(f, Buf3[0], NewSize);  // читаем весь файл туда
+   BlockWrite(f, Buf3[0], NewSize);  // С‡РёС‚Р°РµРј РІРµСЃСЊ С„Р°Р№Р» С‚СѓРґР°
    CloseFile (f);
    //FreeMem (buf3);
    //Freemem (buf2);
@@ -413,7 +413,7 @@ end;
 procedure TForm1._OriginalTextChange(Sender: TObject);
 begin
 _1.Caption := IntToStr(_OriginalText.Position);
-// Нечетные блоки пока пропускаем
+// РќРµС‡РµС‚РЅС‹Рµ Р±Р»РѕРєРё РїРѕРєР° РїСЂРѕРїСѓСЃРєР°РµРј
  if ( Trunc(_Part.Position / 2) <> (_Part.Position / 2)  ) then Exit;
  __RusMemo.Clear;
  Memo2.Clear;
@@ -422,7 +422,7 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
- FreeMem(Buf); // освободить, закрыть и уйти.
+ FreeMem(Buf); // РѕСЃРІРѕР±РѕРґРёС‚СЊ, Р·Р°РєСЂС‹С‚СЊ Рё СѓР№С‚Рё.
 end;
 
 procedure TForm1.btn1Click(Sender: TObject);
